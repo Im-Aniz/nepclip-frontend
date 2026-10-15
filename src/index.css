@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 244 245 247; --surface: 255 255 255; --sunk: 236 238 242; --ink: 14 26 43; --mute: 98 108 124; --line: 224 227 233;
+  --brand: 214 33 58; --brand-soft: 253 232 235; --brand-ink: 255 255 255;
+}
+.dark {
+  --bg: 11 17 28; --surface: 18 27 42; --sunk: 25 36 55; --ink: 238 241 246; --mute: 146 158 176; --line: 38 51 72;
+  --brand: 240 70 92; --brand-soft: 60 22 32; --brand-ink: 255 255 255;
+}
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body { @apply bg-bg text-ink font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  ::selection { background: rgb(var(--brand) / .25); }
+}
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand; }
+  .btn-primary { @apply bg-brand text-brand-ink hover:brightness-110; }
+  .btn-dark { @apply bg-ink text-bg hover:opacity-90; }
+  .btn-ghost { @apply bg-transparent text-ink hover:bg-sunk; }
+  .btn-outline { @apply border border-line bg-surface text-ink hover:bg-sunk; }
+  .btn-danger { @apply bg-red-600 text-white hover:bg-red-700; }
+  .card { @apply rounded-2xl border border-line bg-surface shadow-card; }
+  .input { @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-mute/70 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20; }
+  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-mute; }
+}
+/* prayer-flag stripe used sparingly as a brand motif */
+.flags { background: linear-gradient(90deg, #1D5FA8 0 20%, #fff 20% 40%, #D6213A 40% 60%, #2E8B57 60% 80%, #E8B422 80% 100%); }
+.skeleton { background: linear-gradient(90deg, rgb(var(--sunk)) 25%, rgb(var(--line)) 50%, rgb(var(--sunk)) 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 10px; }
+@keyframes sh { to { background-position: -200% 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .5s cubic-bezier(.2,.7,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .rise, .skeleton { animation: none; } }
