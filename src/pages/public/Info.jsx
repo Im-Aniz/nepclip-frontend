@@ -120,7 +120,7 @@ export function Pricing() {
 /* ================= About ================= */
 
 /** Gradient "phone" thumbnail used as a stand-in for clips. Sized by its parent width (9:16). */
-const PHONE_TINTS = ["from-violet-400 to-sky-400", "from-teal-400 to-cyan-400", "from-pink-400 to-orange-400", "from-lime-400 to-teal-400", "from-indigo-400 to-fuchsia-400", "from-rose-400 to-amber-300"];
+const PHONE_TINTS = ["from-blue-500 to-sky-400", "from-indigo-500 to-blue-400", "from-amber-400 to-orange-400", "from-sky-400 to-cyan-400", "from-blue-600 to-indigo-400", "from-blue-500 to-amber-300"];
 function Phone({ tint = 0, className = "" }) {
   return (
     <div className={`relative overflow-hidden rounded-xl bg-gradient-to-br shadow-lg ${PHONE_TINTS[tint % PHONE_TINTS.length]} ${className}`} style={{ aspectRatio: "9 / 16" }}>
@@ -237,7 +237,7 @@ function TrustSection() {
           {/* submission */}
           <div className="w-60 shrink-0 rounded-2xl bg-surface p-4 shadow-md">
             <p className="flex items-center gap-2 text-sm font-semibold"><span className="h-2 w-2 rounded-full bg-brand" />New submission</p>
-            <p className="mt-3 flex items-center gap-2 text-sm"><span className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-400 to-sky-400" />@yourchannel <span className="text-xs text-mute">just now</span></p>
+            <p className="mt-3 flex items-center gap-2 text-sm"><span className="h-7 w-7 rounded-full bg-gradient-to-br from-blue-500 to-sky-400" />@yourchannel <span className="text-xs text-mute">just now</span></p>
             <p className="mt-3 flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-xs"><Link2 size={14} />Post link added</p>
           </div>
           {connector}
