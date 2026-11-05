@@ -2,7 +2,7 @@ import { cloneElement, isValidElement, useEffect, useId, useState } from "react"
 import { AlertTriangle, ChevronLeft, ChevronRight, Inbox, Loader2, X } from "lucide-react";
 import { cap } from "../utils/format";
 
-export const Spinner = ({ size = 18 }) => <Loader2 size={size} className="animate-spin" aria-label="Loading" />;
+export const Spinner = ({ size = 20 }) => <Loader2 size={size} className="animate-spin" aria-label="Loading" />;
 export const Skeleton = ({ className = "h-4 w-full" }) => <div className={`skeleton ${className}`} aria-hidden />;
 
 const TONES = {
@@ -21,7 +21,7 @@ export function Badge({ children, tone, status }) {
   return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${TONES[t]}`}>{children ?? cap(status)}</span>;
 }
 
-export function Logo({ size = 28, text = true }) {
+export function Logo({ size = 40, text = true }) {
   return (
     <span className="inline-flex items-center gap-2 font-display text-xl font-extrabold tracking-tight">
       <img src="/logo.png" alt="" width={size} height={size} />
