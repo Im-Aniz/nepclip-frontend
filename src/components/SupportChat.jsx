@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ImagePlus, Send, X } from "lucide-react";
-import { get, post } from "../services/api";
+import { Paperclip, Send, X } from "lucide-react";
+import api, { get } from "../services/api";
 import { useToast } from "../context/ToastContext";
 import { Spinner } from "./ui";
 import { errMsg } from "../utils/format";
 
 export const CHAT_IMAGE_MB = 5;
+export const CHAT_VIDEO_MB = 50;   // keep in step with MAX_VIDEO_MB in backend/apps/support/models.py
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const VIDEO_EXT = /\.(mp4|mov|webm|m4v|3gp)$/i;
+const isVideo = (f) => !!f && (f.type.startsWith("video/") || VIDEO_EXT.test(f.name));
 const POLL_MS = 5000;
 
 const sameDay = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
@@ -28,7 +31,7 @@ const merge = (list, incoming) => {
  *   admin:            /admin/support/threads/:id/   (pass staff)
  * New messages arrive by polling, so no websocket server is needed.
  */
-export default function SupportChat({ url, staff = false, onStatus, emptyTitle = "Chat with NepClip support", emptyText = "Ask about payouts, campaigns or your account. You can attach a screenshot too.", className = "h-[68vh] min-h-[420px]" }) {
+export default function SupportChat({ url, staff = false, onStatus, emptyTitle = "Chat with NepClip support", emptyText = "Ask about payouts, campaigns or your account. You can attach a screenshot or a screen recording too.", className = "h-[68vh] min-h-[420px]" }) {
   const toast = useToast();
   const [msgs, setMsgs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +42,7 @@ export default function SupportChat({ url, staff = false, onStatus, emptyTitle =
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
   const [sending, setSending] = useState(false);
+  const [progress, setProgress] = useState(0);
   const scroller = useRef(null);
   const stick = useRef(true);          // keep the view pinned to the newest message while the reader is at the bottom
   const keepOffset = useRef(null);     // scrollHeight before older messages were prepended
@@ -99,7 +103,7 @@ export default function SupportChat({ url, staff = false, onStatus, emptyTitle =
     } catch (e) { keepOffset.current = null; toast.error(errMsg(e)); }
   };
 
-  // photo picking
+  // photo / video picking
   useEffect(() => {
     if (!file) { setPreview(""); return undefined; }
     const u = URL.createObjectURL(file);
@@ -110,8 +114,10 @@ export default function SupportChat({ url, staff = false, onStatus, emptyTitle =
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!IMAGE_TYPES.includes(f.type)) { toast.error("Please choose a JPG, PNG, WebP or GIF photo."); return; }
-    if (f.size > CHAT_IMAGE_MB * 1024 * 1024) { toast.error(`Photos must be under ${CHAT_IMAGE_MB} MB.`); return; }
+    if (isVideo(f)) {
+      if (f.size > CHAT_VIDEO_MB * 1024 * 1024) { toast.error(`Videos must be under ${CHAT_VIDEO_MB} MB. Try trimming the recording.`); return; }
+    } else if (!IMAGE_TYPES.includes(f.type)) { toast.error("Please choose a JPG, PNG, WebP or GIF photo, or an MP4, MOV or WebM video."); return; }
+    else if (f.size > CHAT_IMAGE_MB * 1024 * 1024) { toast.error(`Photos must be under ${CHAT_IMAGE_MB} MB.`); return; }
     setFile(f);
   };
 
@@ -119,17 +125,17 @@ export default function SupportChat({ url, staff = false, onStatus, emptyTitle =
     e?.preventDefault();
     const body = text.trim();
     if ((!body && !file) || sending) return;
-    setSending(true);
+    setSending(true); setProgress(0);
     try {
       const fd = new FormData();
       if (body) fd.append("body", body);
-      if (file) fd.append("image", file);
-      const m = await post(url, fd);
+      if (file) fd.append(isVideo(file) ? "video" : "image", file);
+      const m = await api.post(url, fd, { onUploadProgress: (ev) => ev.total && setProgress(Math.round((ev.loaded / ev.total) * 100)) }).then((r) => r.data);
       stick.current = true;
       setMsgs((cur) => merge(cur, [m]));
       setText(""); setFile(null);
       if (!staff) setStatus("open");
-    } catch (x) { toast.error(errMsg(x, "Couldn't send. Please try again.")); } finally { setSending(false); }
+    } catch (x) { toast.error(errMsg(x, "Couldn't send. Please try again.")); } finally { setSending(false); setProgress(0); }
   };
   const onKey = (e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); } };
   const grow = (e) => { e.target.style.height = "auto"; e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`; };
@@ -159,6 +165,9 @@ export default function SupportChat({ url, staff = false, onStatus, emptyTitle =
                       <img src={m.image} alt="Photo sent in chat" loading="lazy" onLoad={() => stick.current && toBottom()} className="max-h-64 rounded-xl object-cover" />
                     </a>
                   )}
+                  {m.video && (
+                    <video src={m.video} controls playsInline preload="metadata" onLoadedMetadata={() => stick.current && toBottom()} className={`max-h-72 w-full rounded-xl bg-black ${m.body ? "mb-1.5" : ""}`} />
+                  )}
                   {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
                   <p className={`mt-1 text-right text-[11px] ${mine ? "opacity-75" : "text-mute"}`}>{timeLabel(m.created_at)}</p>
                 </div>
@@ -173,19 +182,25 @@ export default function SupportChat({ url, staff = false, onStatus, emptyTitle =
       <form onSubmit={send} className="border-t border-line bg-surface p-3">
         {preview && (
           <div className="mb-2 flex items-center gap-3 rounded-xl bg-sunk p-2">
-            <img src={preview} alt="Photo to send" className="h-14 w-14 rounded-lg object-cover" />
-            <p className="min-w-0 flex-1 truncate text-sm">{file?.name}</p>
-            <button type="button" onClick={() => setFile(null)} aria-label="Remove photo" className="btn btn-ghost !p-1.5"><X size={16} /></button>
+            {isVideo(file)
+              ? <video src={preview} muted playsInline preload="metadata" className="h-14 w-14 rounded-lg bg-black object-cover" />
+              : <img src={preview} alt="Photo to send" className="h-14 w-14 rounded-lg object-cover" />}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm">{file?.name}</p>
+              <p className="text-xs text-mute">{sending && isVideo(file) ? `Uploading… ${progress}%` : `${(file.size / 1048576).toFixed(1)} MB`}</p>
+              {sending && isVideo(file) && <div className="mt-1 h-1 overflow-hidden rounded-full bg-line"><div className="h-full bg-brand transition-all" style={{ width: `${progress}%` }} /></div>}
+            </div>
+            <button type="button" onClick={() => setFile(null)} disabled={sending} aria-label="Remove attachment" className="btn btn-ghost !p-1.5"><X size={16} /></button>
           </div>
         )}
         <div className="flex items-end gap-2">
-          <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={pick} className="hidden" aria-label="Choose a photo" />
-          <button type="button" onClick={() => fileInput.current?.click()} className="btn btn-outline !p-2.5" aria-label="Attach a photo" disabled={sending}><ImagePlus size={18} /></button>
+          <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm" onChange={pick} className="hidden" aria-label="Choose a photo or video" />
+          <button type="button" onClick={() => fileInput.current?.click()} className="btn btn-outline !p-2.5" aria-label="Attach a photo or video" disabled={sending}><Paperclip size={18} /></button>
           <textarea value={text} onChange={(e) => { setText(e.target.value); grow(e); }} onKeyDown={onKey} rows={1} maxLength={2000} placeholder={staff ? "Write a reply…" : "Write a message…"} aria-label="Message"
             className="input max-h-36 min-h-[42px] flex-1 resize-none !py-2.5" />
           <button className="btn btn-primary !p-2.5" disabled={sending || (!text.trim() && !file)} aria-label="Send message">{sending ? <Spinner size={18} /> : <Send size={18} />}</button>
         </div>
-        <p className="mt-1.5 px-1 text-[11px] text-mute">Enter to send, Shift + Enter for a new line. Photos up to {CHAT_IMAGE_MB} MB.</p>
+        <p className="mt-1.5 px-1 text-[11px] text-mute">Enter to send, Shift + Enter for a new line. Photos up to {CHAT_IMAGE_MB} MB, videos up to {CHAT_VIDEO_MB} MB.</p>
       </form>
     </div>
   );
