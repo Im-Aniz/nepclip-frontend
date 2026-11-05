@@ -54,12 +54,12 @@ export function Dashboard() {
         <StatCard label="Platform revenue" value={money(c.platform_revenue)} icon={Banknote} accent loading={loading} /><StatCard label="Pending withdrawals" value={c.pending_withdrawals} loading={loading} />
       </div>
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <ChartCard title="User growth" sub="New users per day"><BarsChart data={ch.user_growth} x="date" y="value" color="#1D5FA8" /></ChartCard>
-        <ChartCard title="Campaign growth" sub="New campaigns per day"><BarsChart data={ch.campaign_growth} x="date" y="value" color="#E8B422" /></ChartCard>
+        <ChartCard title="User growth" sub="New users per day"><BarsChart data={ch.user_growth} x="date" y="value" color="#1F6BFF" /></ChartCard>
+        <ChartCard title="Campaign growth" sub="New campaigns per day"><BarsChart data={ch.campaign_growth} x="date" y="value" color="#FFB020" /></ChartCard>
         <ChartCard title="Total views"><TrendChart data={ch.views} y="views" /></ChartCard>
         <ChartCard title="Platform revenue"><TrendChart data={ch.platform_revenue} y="amount" color="#2E8B57" format={(v) => money(v)} /></ChartCard>
-        <ChartCard title="Creator payouts"><TrendChart data={ch.creator_payouts} y="amount" color="#7A5AF8" format={(v) => money(v)} /></ChartCard>
-        <ChartCard title="Campaign spending"><TrendChart data={ch.campaign_spending} y="value" color="#D6213A" format={(v) => money(v)} /></ChartCard>
+        <ChartCard title="Creator payouts"><TrendChart data={ch.creator_payouts} y="amount" color="#3A5A8C" format={(v) => money(v)} /></ChartCard>
+        <ChartCard title="Campaign spending"><TrendChart data={ch.campaign_spending} y="value" color="#E08A00" format={(v) => money(v)} /></ChartCard>
       </div>
     </>
   );
