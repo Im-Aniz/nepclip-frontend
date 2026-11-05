@@ -197,6 +197,7 @@ export function Fraud() {
 
 /* ---------- Withdrawals, transactions ---------- */
 export function Withdrawals() {
+  const toast = useToast();
   const L = useList("/admin/withdrawals/");
   const [run, busy] = useRun(L.reload);
   const [dlg, setDlg] = useState(null);
@@ -206,11 +207,16 @@ export function Withdrawals() {
   const cols = [{ key: "username", label: "Creator", render: (r) => <button className="font-semibold hover:text-brand" onClick={() => setDlg({ kind: "details", w: r })}>@{r.username}</button> }, { key: "amount", label: "Amount", className: "tabular-nums font-semibold", render: (r) => money(r.amount) },
     { key: "method_label", label: "Method" }, { key: "account_masked", label: "Account" }, { key: "status", label: "Status", render: (r) => <><Badge status={r.status} />{r.payment_reference && <p className="mt-1 text-xs text-mute">{r.payment_reference}</p>}</> },
     { key: "a", label: "Actions", render: (r) => <div className="flex flex-wrap gap-1.5">
+      <Btn onClick={() => setDlg({ kind: "details", w: r })}>Pay details</Btn>
       {r.status === "pending" && <Btn tone="primary" disabled={busy} onClick={() => act(r, "approve", {}, "Approved.")}>Approve</Btn>}
       {r.status === "approved" && <Btn disabled={busy} onClick={() => act(r, "process", {}, "Marked processing.")}>Processing</Btn>}
       {["approved", "processing"].includes(r.status) && <Btn tone="primary" onClick={() => { setRef(""); setDlg({ kind: "complete", w: r }); }}>Mark paid</Btn>}
       {["pending", "approved", "processing"].includes(r.status) && <Btn tone="danger" onClick={() => setDlg({ kind: "reject", w: r })}>Reject</Btn>}</div> }];
-  const Details = ({ w }) => <Dl rows={[["Creator", `@${w.username}`], ["Amount", money(w.amount)], ["Method", w.method_label], ["Payout account", detail?.account_details]]} />;
+  const copy = async (t) => { try { await navigator.clipboard.writeText(t); toast.success("Copied."); } catch { toast.error("Couldn't copy."); } };
+  const Details = ({ w }) => <><Dl rows={[["Creator", `@${w.username}`], ["Amount", money(w.amount)], ["Method", w.method_label], ["Payout account", detail?.account_details || "Not readable"]]} />
+    {detail?.account_details
+      ? <button className="btn btn-outline mt-3" onClick={() => copy(detail.account_details)}>Copy account details</button>
+      : <p className="mt-3 rounded-xl bg-amber-500/15 px-3 py-2 text-sm">The saved account couldn't be decrypted. This usually means the server's FIELD_ENCRYPTION_KEY (or SECRET_KEY) changed after the request was made. Ask the creator to submit a new withdrawal.</p>}</>;
   return (<><PageHeader title="Withdrawals" subtitle="Review requests, pay them manually, then mark them paid." />
     <div className="mb-4 flex flex-wrap gap-3"><SearchBox value={L.q} onChange={L.setQ} placeholder="Search creator or reference" /><Tabs value={L.tab} onChange={L.setTab} tabs={[{ value: "", label: "All" }, "pending", "approved", "processing", "completed", "rejected"]} /></div>
     <DataTable columns={cols} rows={L.data?.results} loading={L.loading} error={L.error} onRetry={L.reload} page={L.page} count={L.data?.count || 0} onPage={L.setPage} />
