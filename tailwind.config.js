@@ -7,15 +7,16 @@ export default {
     extend: {
       colors: {
         bg: v("bg"), surface: v("surface"), sunk: v("sunk"), ink: v("ink"), mute: v("mute"), line: v("line"),
+        accent: { DEFAULT: v("accent"), ink: v("accent-ink") },
         brand: { DEFAULT: v("brand"), soft: v("brand-soft"), ink: v("brand-ink") },
-        flag: { blue: "#1D5FA8", green: "#2E8B57", yellow: "#E8B422" },
+        flag: { blue: "#1F6BFF", green: "#2E8B57", yellow: "#FFB020" },
       },
       fontFamily: {
         display: ['"Bricolage Grotesque"', "ui-sans-serif", "system-ui", "sans-serif"],
         sans: ['"Hanken Grotesk"', "ui-sans-serif", "system-ui", "sans-serif"],
       },
       borderRadius: { xl: "14px", "2xl": "20px" },
-      boxShadow: { card: "0 1px 0 rgb(var(--line)), 0 8px 24px -16px rgb(14 26 43 / .25)" },
+      boxShadow: { card: "0 1px 0 rgb(var(--line)), 0 8px 24px -16px rgb(11 31 58 / .25)" },
     },
   },
   plugins: [],
