@@ -21,6 +21,11 @@ export default function CampaignCard({ c, to = `/campaign/${c.id}` }) {
   const dl = daysLeft(c.end_date);
   return (
     <Link to={to} className="card group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-brand/40">
+      {c.cover_image && (
+        <div className="-mx-5 -mt-5 mb-4 aspect-[16/7] overflow-hidden rounded-t-2xl bg-sunk">
+          <img src={c.cover_image} alt="" loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+        </div>
+      )}
       <div className="flex items-start gap-3">
         <BrandMark c={c} />
         <div className="min-w-0 flex-1">
