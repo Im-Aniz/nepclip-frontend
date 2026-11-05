@@ -16,16 +16,16 @@ const Stars = () => (
 );
 
 const Tile = ({ to, icon: Icon, image, stars = false, title, text, className = "", style }) => (
-  <Link to={to} style={style} className={`group relative flex h-56 flex-col justify-end overflow-hidden rounded-2xl p-4 sm:h-72 sm:rounded-3xl sm:p-6 ${className}`}>
+  <Link to={to} style={style} className={`group relative flex h-40 flex-col justify-end overflow-hidden rounded-2xl p-3 sm:h-72 sm:rounded-3xl sm:p-6 ${className}`}>
     <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/15 to-transparent" />
     {stars && <Stars />}
     {image ? (
-      <img src={image} alt="" className="absolute left-1/2 top-6 h-20 -translate-x-1/2 object-contain sm:top-9 sm:h-32 transition group-hover:scale-105" />
+      <img src={image} alt="" className="absolute left-1/2 top-3 h-12 -translate-x-1/2 object-contain sm:top-9 sm:h-32 transition group-hover:scale-105" />
     ) : (
-      <Icon aria-hidden="true" size={128} strokeWidth={1.25} className="absolute left-1/2 top-7 h-20 w-20 -translate-x-1/2 opacity-40 sm:top-10 sm:h-32 sm:w-32 transition group-hover:scale-105" />
+      <Icon aria-hidden="true" size={128} strokeWidth={1.25} className="absolute left-1/2 top-3 h-12 w-12 -translate-x-1/2 opacity-40 sm:top-10 sm:h-32 sm:w-32 transition group-hover:scale-105" />
     )}
-    <h3 className="relative flex items-center gap-1 text-base font-bold sm:text-xl">{title}<ChevronRight size={18} className="transition group-hover:translate-x-0.5" /></h3>
-    <p className="relative mt-1 text-xs leading-snug opacity-80 sm:text-sm">{text}</p>
+    <h3 className="relative flex items-center gap-1 text-sm font-bold sm:text-xl">{title}<ChevronRight size={18} className="transition group-hover:translate-x-0.5" /></h3>
+    <p className="relative mt-1 text-[11px] leading-snug opacity-80 sm:text-sm">{text}</p>
   </Link>
 );
 
