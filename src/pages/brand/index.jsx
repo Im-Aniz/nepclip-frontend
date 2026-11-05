@@ -30,7 +30,7 @@ export function Dashboard() {
       </div>
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <ChartCard title="Views over time" sub="Last 30 days"><TrendChart data={d?.views_series} y="views" /></ChartCard>
-        <ChartCard title="Spend over time" sub="Last 30 days"><TrendChart data={d?.spend_series} y="amount" color="#1D5FA8" format={(v) => money(v)} /></ChartCard>
+        <ChartCard title="Spend over time" sub="Last 30 days"><TrendChart data={d?.spend_series} y="amount" color="#1F6BFF" format={(v) => money(v)} /></ChartCard>
       </div>
     </>
   );
@@ -264,7 +264,7 @@ export function CampaignView() {
         <StatCard label="Platform fee" value={money(a?.platform_fee)} loading={!a} /><StatCard label="Remaining budget" value={money(a?.remaining)} loading={!a} accent />
         <StatCard label="Total views" value={compact(a?.views)} sub={`${compact(a?.eligible_views)} eligible`} loading={!a} /><StatCard label="Clips" value={a?.submissions} loading={!a} /><StatCard label="Creators" value={a?.creators} loading={!a} />
       </div>
-      <div className="mt-6 grid gap-4 lg:grid-cols-2"><ChartCard title="Views" sub="Last 30 days"><TrendChart data={a?.views_series} y="views" /></ChartCard><ChartCard title="Spend" sub="Last 30 days"><TrendChart data={a?.spend_series} y="amount" color="#1D5FA8" format={(v) => money(v)} /></ChartCard></div>
+      <div className="mt-6 grid gap-4 lg:grid-cols-2"><ChartCard title="Views" sub="Last 30 days"><TrendChart data={a?.views_series} y="views" /></ChartCard><ChartCard title="Spend" sub="Last 30 days"><TrendChart data={a?.spend_series} y="amount" color="#1F6BFF" format={(v) => money(v)} /></ChartCard></div>
       <h2 className="mb-3 mt-8 text-xl font-bold">Creator submissions</h2>
       <DataTable columns={cols} rows={subs?.results} loading={sl} page={page} count={subs?.count || 0} onPage={setPage} empty={<EmptyState icon={Film} title="No clips yet" text="Submissions will appear here once creators join and post." />} />
       <p className="mt-2 text-xs text-mute">Fraud decisions are handled by NepClip admins. Use Contact Platform to report a concern.</p>
