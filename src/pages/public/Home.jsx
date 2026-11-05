@@ -16,16 +16,16 @@ const Stars = () => (
 );
 
 const Tile = ({ to, icon: Icon, image, stars = false, title, text, className = "", style }) => (
-  <Link to={to} style={style} className={`group relative flex h-72 flex-col justify-end overflow-hidden rounded-3xl p-6 ${className}`}>
+  <Link to={to} style={style} className={`group relative flex h-56 flex-col justify-end overflow-hidden rounded-2xl p-4 sm:h-72 sm:rounded-3xl sm:p-6 ${className}`}>
     <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/15 to-transparent" />
     {stars && <Stars />}
     {image ? (
-      <img src={image} alt="" className="absolute left-1/2 top-9 h-32 -translate-x-1/2 object-contain transition group-hover:scale-105" />
+      <img src={image} alt="" className="absolute left-1/2 top-6 h-20 -translate-x-1/2 object-contain sm:top-9 sm:h-32 transition group-hover:scale-105" />
     ) : (
-      <Icon aria-hidden="true" size={128} strokeWidth={1.25} className="absolute left-1/2 top-10 -translate-x-1/2 opacity-40 transition group-hover:scale-105" />
+      <Icon aria-hidden="true" size={128} strokeWidth={1.25} className="absolute left-1/2 top-7 h-20 w-20 -translate-x-1/2 opacity-40 sm:top-10 sm:h-32 sm:w-32 transition group-hover:scale-105" />
     )}
-    <h3 className="relative flex items-center gap-1 text-xl font-bold">{title}<ChevronRight size={18} className="transition group-hover:translate-x-0.5" /></h3>
-    <p className="relative mt-1 text-sm opacity-80">{text}</p>
+    <h3 className="relative flex items-center gap-1 text-base font-bold sm:text-xl">{title}<ChevronRight size={18} className="transition group-hover:translate-x-0.5" /></h3>
+    <p className="relative mt-1 text-xs leading-snug opacity-80 sm:text-sm">{text}</p>
   </Link>
 );
 
@@ -67,7 +67,7 @@ export default function Home() {
       {/* Getting started */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <h2 className="mb-5 text-2xl font-extrabold tracking-tight">Getting started</h2>
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5">
           <Tile to="/register" icon={Clapperboard} stars title="Clipping" text="Get paid to create content for top brands" className="text-[#2e1d00]"
             style={{ background: "linear-gradient(180deg, #f8d56b 0%, #e0a526 55%, #c98a12 100%)" }} />
           <Tile to="/launch-campaign" image="/logo.png" title="Launch a campaign" text="Pay only for the reach you get, with spend capped at your budget" className="bg-ink text-bg" />
