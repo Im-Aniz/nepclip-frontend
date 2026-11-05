@@ -1,7 +1,7 @@
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { compact, shortDate } from "../utils/format";
 
-export const COLORS = ["#D6213A", "#1D5FA8", "#2E8B57", "#E8B422", "#7A5AF8", "#0E1A2B"];
+export const COLORS = ["#1F6BFF", "#FFB020", "#5B9BFF", "#E08A00", "#3A5A8C", "#2E8B57"];
 const axis = { stroke: "currentColor", fontSize: 11, tickLine: false, axisLine: false };
 const tip = { contentStyle: { background: "rgb(var(--surface))", border: "1px solid rgb(var(--line))", borderRadius: 12, fontSize: 12, color: "rgb(var(--ink))" }, cursor: { stroke: "rgb(var(--line))" } };
 
