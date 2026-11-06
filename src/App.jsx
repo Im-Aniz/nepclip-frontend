@@ -9,6 +9,7 @@ const P = (f) => lazy(f);
 const Home = P(() => import("./pages/public/Home"));
 const Campaigns = P(() => import("./pages/public/Campaigns"));
 const CampaignDetail = P(() => import("./pages/public/CampaignDetail"));
+const Privacy = P(() => import("./pages/public/Privacy"));
 const { ForCreators, ForBrands, HowItWorks, Pricing, About } = {
   ForCreators: P(() => import("./pages/public/Info").then((m) => ({ default: m.ForCreators }))),
   ForBrands: P(() => import("./pages/public/Info").then((m) => ({ default: m.ForBrands }))),
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="pricing" element={<Pricing />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="privacy" element={<Privacy />} />
           <Route path="login" element={<GuestOnly><Login /></GuestOnly>} />
           <Route path="register" element={<GuestOnly><Register /></GuestOnly>} />
           <Route path="forgot-password" element={<ForgotPassword />} />
