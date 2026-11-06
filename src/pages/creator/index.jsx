@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Activity, Banknote, BadgeCheck, Check, ChevronRight, Clapperboard, Copy, Eye, Film, Link2, Megaphone, Play, RefreshCw, Sparkles, Trash2, Trophy, Wallet, XCircle } from "lucide-react";
 import CampaignCard from "../../components/CampaignCard";
@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useSettings } from "../../context/SettingsContext";
 import { useToast } from "../../context/ToastContext";
 import useFetch from "../../hooks/useFetch";
-import { del, patch, post } from "../../services/api";
+import { del, get, patch, post } from "../../services/api";
 import { cap, compact, date, errMsg, fieldErrors, money, num, pct, PLATFORM_LABEL } from "../../utils/format";
 import BrowseCampaigns from "../public/Campaigns";
 
@@ -412,6 +412,7 @@ function PlatformIcon({ platform, size = 18, className = "" }) {
   const Icon = BRAND_ICONS[platform];
   return Icon ? <Icon width={size} height={size} className={className} /> : <Link2 size={size} className={className} />;
 }
+const OAUTH_PLATFORMS = ["tiktok", "instagram"];   // linked through the platform's own login, not a typed handle
 const CONNECT_OPTIONS = [["instagram", "Instagram"], ["tiktok", "TikTok"], ["youtube", "YouTube"]];
 /* position + size of each floating icon in the empty-state illustration */
 const FLOATERS = [["tiktok", "left-[38%] top-0", 36], ["instagram", "right-[8%] top-[18%]", 36], ["instagram", "left-[8%] top-[28%]", 36], ["youtube", "left-[22%] bottom-[8%]", 36], ["x", "right-[14%] bottom-[14%]", 36]];
@@ -431,7 +432,26 @@ export function Accounts() {
 
   const openModal = () => { setStep("pick"); setPlatform(""); setHandle(""); setOpen(true); };
   const closeModal = () => { if (busy !== "add") setOpen(false); };
-  const pick = (p) => { if (!supported.includes(p)) return; setPlatform(p); setStep("details"); };
+  const pick = async (p) => {
+    if (!supported.includes(p) || busy) return;
+    if (OAUTH_PLATFORMS.includes(p)) {
+      setBusy(`oauth${p}`);
+      try { const { url } = await get(`/social-oauth/${p}/start/`); window.location.href = url; return; }
+      catch (x) { if (x?.response?.status !== 503) { toast.error(errMsg(x)); setBusy(""); return; } }   // 503 = login not configured on the server: use the manual flow
+      setBusy("");
+    }
+    setPlatform(p); setStep("details");
+  };
+
+  // coming back from TikTok / Instagram login: ?connected=tiktok or ?error=...
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (!q.get("connected") && !q.get("error")) return;
+    if (q.get("connected")) { toast.success(`${label(q.get("connected"))} account connected.`); reload(); }
+    else toast.error(q.get("error"));
+    window.history.replaceState({}, "", window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const connect = async (e) => {
     e.preventDefault(); setBusy("add");
@@ -510,7 +530,7 @@ export function Accounts() {
                   <button key={p} type="button" disabled={!live} onClick={() => pick(p)}
                     className="flex w-full items-center justify-between rounded-2xl border border-line px-4 py-4 text-left transition hover:border-ink focus-visible:border-ink focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-line">
                     <span className="flex items-center gap-3 font-medium"><PlatformIcon platform={p} size={18} />{name}</span>
-                    {live ? <ChevronRight size={18} className="text-mute" /> : <span className="text-xs font-semibold text-mute">Coming soon</span>}
+                    {live ? (busy === `oauth${p}` ? <Spinner size={16} /> : <ChevronRight size={18} className="text-mute" />) : <span className="text-xs font-semibold text-mute">Coming soon</span>}
                   </button>
                 );
               })}
