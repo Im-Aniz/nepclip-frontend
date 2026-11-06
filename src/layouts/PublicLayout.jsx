@@ -9,7 +9,7 @@ const LINKS = [["/campaigns", "Campaigns"], ["/for-creators", "For creators"], [
 
 // Footer columns (all of these routes exist). To add legal pages later, add a ["Legal", [...]] column here.
 const FOOTER = [
-  ["Company", [["About", "/about"], ["How it works", "/how-it-works"], ["Pricing", "/pricing"], ["Contact us", "/contact"]]],
+  ["Company", [["About", "/about"], ["How it works", "/how-it-works"], ["Pricing", "/pricing"], ["Contact us", "/contact"], ["Terms", "/for-creators#terms"], ["Privacy Policy", "/privacy"]]],
   ["Creators", [["Browse campaigns", "/campaigns"], ["How you earn", "/for-creators"], ["Sign up", "/register"], ["Log in", "/login"]]],
   ["Brands", [["Launch a campaign", "/launch-campaign"], ["How it works for brands", "/for-brands"], ["Talk to our team", "/contact"]]],
 ];
